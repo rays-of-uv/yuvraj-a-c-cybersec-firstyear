@@ -19,8 +19,6 @@ A responsive, frontend-only food ordering experience created for the CodeKrafter
 - Checkout flow that places an order into Ongoing orders, with delivery confirmation to move it into Past orders
 - Order cancellation flow with a transparent 50% next-order charge to discourage food waste
 
-The `assets/food-hero.png` file is used for the local hero artwork. Keep the complete `assets/` folder when uploading to GitHub; the hero also has a remote fallback so the page remains visible if the asset is temporarily unavailable.
-
 ## Run locally
 
 No install step is needed.
@@ -39,19 +37,6 @@ cart-logic.js    Testable cart/coupon business logic
 assets           Project-owned visuals
 tests            Self-tests for cart logic and page behaviour
 ```
-
-## Test it
-
-With Node.js installed, run:
-
-```bash
-node tests/cart-logic.test.js
-node tests/app-behavior.test.js
-```
-
-These cover invalid saved cart data, duplicate/invalid quantities, coupon rules, checkout totals, adding an item, coupon application/removal, and the dish-flight animation hook.
-
-If Node.js is unavailable, the same core flows can be smoke-tested in a browser: complete onboarding, switch theme, search/filter the menu, add a dish, open the cart, and apply `CODEKRAFTERS`.
 
 ## Demo checklist
 

@@ -19,6 +19,8 @@ A responsive, frontend-only food ordering experience created for the CodeKrafter
 - Checkout flow that places an order into Ongoing orders, with delivery confirmation to move it into Past orders
 - Order cancellation flow with a transparent 50% next-order charge to discourage food waste
 
+The `assets/food-hero.png` file is used for the local hero artwork. Keep the complete `assets/` folder when uploading to GitHub; the hero also has a remote fallback so the page remains visible if the asset is temporarily unavailable.
+
 ## Run locally
 
 No install step is needed.

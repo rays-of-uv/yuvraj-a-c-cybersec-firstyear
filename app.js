@@ -28,6 +28,11 @@ let couponFeedbackType = "";
 let user = readStoredJson("cravecart-user", null);
 let deliveryLocation = readStoredJson("cravecart-location", { country: "India", city: "Bengaluru", area: "Indiranagar" });
 let orders = readStoredJson("cravecart-orders", []);
+const storedCancellationCharge = Number(readStoredText("cravecart-cancellation-charge")) || 0;
+const unchargedCancellations = orders.filter(order => order.status === "cancelled" && !order.cancellationChargeApplied);
+let cancellationCharge = unchargedCancellations.length
+  ? unchargedCancellations.reduce((sum, order) => sum + (Number(order.cancellationCharge) || 0), 0)
+  : storedCancellationCharge;
 const categoryRow = document.getElementById("categoryRow");
 const foodGrid = document.getElementById("foodGrid");
 const foodSearch = document.getElementById("foodSearch");
@@ -56,12 +61,16 @@ const citySelect = document.getElementById("citySelect");
 const areaInput = document.getElementById("areaInput");
 const ordersLayer = document.getElementById("ordersLayer");
 const ordersContent = document.getElementById("ordersContent");
+const deliveryConfirmLayer = document.getElementById("deliveryConfirmLayer");
+const cancelConfirmLayer = document.getElementById("cancelConfirmLayer");
+let orderPendingCompletion = null;
 let toastTimer;
 
 function money(value) { return `₹${Number(value || 0).toLocaleString("en-IN")}`; }
 function saveUser() { try { localStorage.setItem("cravecart-user", JSON.stringify(user)); } catch {} }
 function saveLocation() { try { localStorage.setItem("cravecart-location", JSON.stringify(deliveryLocation)); } catch {} }
 function saveOrders() { try { localStorage.setItem("cravecart-orders", JSON.stringify(orders)); } catch {} }
+function saveCancellationCharge() { try { localStorage.setItem("cravecart-cancellation-charge", String(cancellationCharge)); } catch {} }
 function initials(name) { return name.trim().slice(0, 1).toUpperCase() || "F"; }
 function validUser(value) { return value && typeof value.name === "string" && value.name.trim().length >= 2 && typeof value.phone === "string" && /^\d{10}$/.test(value.phone); }
 function formatPhone(phone) { return `+91 ${phone.slice(0, 5)} ${phone.slice(5)}`; }
@@ -98,8 +107,8 @@ function setLocationOpen(open) {
 }
 function renderOrders() {
   const ongoing = orders.filter(order => order.status === "ongoing");
-  const past = orders.filter(order => order.status === "past");
-  const orderMarkup = order => `<article class="order-card"><div><strong>Order #${order.id}</strong><small>${order.items} item${order.items === 1 ? "" : "s"} · ${money(order.total)}</small></div><span class="order-status ${order.status}">${order.status === "ongoing" ? "On the way" : "Delivered"}</span></article>`;
+  const past = orders.filter(order => order.status !== "ongoing");
+  const orderMarkup = order => `<article class="order-card"><div><strong>Order #${order.id}</strong><small>${order.items} item${order.items === 1 ? "" : "s"} · ${money(order.total)}</small></div>${order.status === "ongoing" ? `<div class="order-actions"><span class="order-status ongoing">Ongoing</span><button class="text-button order-complete-button" type="button" data-complete-order="${order.id}">Mark as completed</button><button class="text-button order-cancel-button" type="button" data-cancel-order="${order.id}">Cancel order</button></div>` : `<span class="order-status past">${order.status === "cancelled" ? "Cancelled" : "Delivered"}</span>`}</article>`;
   const emptyGroup = message => `<p class="orders-group-empty">${message}</p>`;
   ordersContent.innerHTML = `<h3 class="orders-group-title">Ongoing</h3>${ongoing.length ? ongoing.map(orderMarkup).join("") : emptyGroup("No orders are being prepared right now.")}<h3 class="orders-group-title">Past orders</h3>${past.length ? past.map(orderMarkup).join("") : emptyGroup("Your delivered orders will show up here.")}`;
 }
@@ -107,6 +116,43 @@ function setOrdersOpen(open) {
   ordersLayer.hidden = !open;
   profileMenu.hidden = true;
   if (open) renderOrders();
+}
+function setDeliveryConfirmOpen(open, order = null) {
+  orderPendingCompletion = open ? order : null;
+  deliveryConfirmLayer.hidden = !open;
+  if (open) document.getElementById("deliveryConfirmMessage").textContent = `Please confirm that order #${order.id} has arrived safely.`;
+}
+function setCancelConfirmOpen(open, order = null) {
+  orderPendingCompletion = open ? order : null;
+  cancelConfirmLayer.hidden = !open;
+  if (open) document.getElementById("cancelConfirmMessage").textContent = `Cancelling order #${order.id} adds a ${money(order.total * 0.5)} charge to your next order to help prevent food waste.`;
+}
+function cancelPendingOrder() {
+  if (!orderPendingCompletion) return;
+  const order = orders.find(item => item.id === orderPendingCompletion.id && item.status === "ongoing");
+  if (!order) { setCancelConfirmOpen(false); return; }
+  const charge = Math.round(order.total * 0.5);
+  cancellationCharge += charge;
+  order.status = "cancelled";
+  order.cancelledAt = new Date().toISOString();
+  order.cancellationCharge = charge;
+  order.cancellationChargeApplied = false;
+  saveOrders();
+  saveCancellationCharge();
+  setCancelConfirmOpen(false);
+  renderOrders();
+  showToast(`Order cancelled. ${money(charge)} will be added to your next order.`);
+}
+function completePendingOrder() {
+  if (!orderPendingCompletion) return;
+  const order = orders.find(item => item.id === orderPendingCompletion.id && item.status === "ongoing");
+  if (!order) { setDeliveryConfirmOpen(false); return; }
+  order.status = "past";
+  order.completedAt = new Date().toISOString();
+  saveOrders();
+  setDeliveryConfirmOpen(false);
+  renderOrders();
+  showToast(`Order #${order.id} marked as delivered. Thanks for confirming!`);
 }
 function setTheme(theme) {
   const dark = theme === "dark";
@@ -188,7 +234,9 @@ function renderCart() {
   document.getElementById("subtotal").textContent = money(totals.subtotal);
   document.getElementById("discount").textContent = `−${money(totals.discount)}`;
   document.getElementById("discountRow").hidden = totals.discount === 0;
-  document.getElementById("total").textContent = money(totals.total);
+  document.getElementById("cancellationCharge").textContent = money(cancellationCharge);
+  document.getElementById("cancellationRow").hidden = cancellationCharge === 0;
+  document.getElementById("total").textContent = money(totals.total + cancellationCharge);
   renderCoupon(totals);
   saveCart();
 }
@@ -276,11 +324,16 @@ document.getElementById("copyCode").addEventListener("click", async () => { try 
 document.getElementById("checkoutButton").addEventListener("click", () => {
   const totals = calculateCart(cart, appliedCoupon);
   if (!cart.length) return;
-  orders.unshift({ id: String(Date.now()).slice(-6), items: cart.reduce((sum, item) => sum + item.quantity, 0), total: totals.total, status: "ongoing", createdAt: new Date().toISOString() });
+  const orderTotal = totals.total + cancellationCharge;
+  orders.unshift({ id: String(Date.now()).slice(-6), items: cart.reduce((sum, item) => sum + item.quantity, 0), total: orderTotal, status: "ongoing", createdAt: new Date().toISOString(), cancellationCharge });
+  orders.forEach(order => {
+    if (order.status === "cancelled" && !order.cancellationChargeApplied) order.cancellationChargeApplied = true;
+  });
   orders = orders.slice(0, 10);
+  cancellationCharge = 0; saveCancellationCharge();
   saveOrders();
   cart = []; appliedCoupon = ""; saveCoupon(); renderCart(); setCartOpen(false);
-  showToast("We’re building the backend for checkout — good things take a little time.");
+  showToast("Order placed! Good things take a little time — thanks for your patience. It’s now in Ongoing orders.");
 });
 locationButton.addEventListener("click", () => setLocationOpen(true));
 document.getElementById("closeLocation").addEventListener("click", () => setLocationOpen(false));
@@ -293,13 +346,32 @@ locationForm.addEventListener("submit", event => {
   saveLocation(); renderLocation(); setLocationOpen(false); showToast(`Delivery spot saved: ${area}, ${deliveryLocation.city}`);
 });
 document.getElementById("ordersButton").addEventListener("click", () => setOrdersOpen(true));
+ordersContent.addEventListener("click", event => {
+  const completeButton = event.target.closest("[data-complete-order]");
+  if (completeButton) {
+    const order = orders.find(item => item.id === completeButton.dataset.completeOrder && item.status === "ongoing");
+    if (order) setDeliveryConfirmOpen(true, order);
+    return;
+  }
+  const cancelButton = event.target.closest("[data-cancel-order]");
+  if (cancelButton) {
+    const cancelOrder = orders.find(item => item.id === cancelButton.dataset.cancelOrder && item.status === "ongoing");
+    if (cancelOrder) setCancelConfirmOpen(true, cancelOrder);
+  }
+});
 document.getElementById("profileLocationButton").addEventListener("click", () => setLocationOpen(true));
 document.getElementById("closeOrders").addEventListener("click", () => setOrdersOpen(false));
+document.getElementById("closeDeliveryConfirm").addEventListener("click", () => setDeliveryConfirmOpen(false));
+document.getElementById("cancelDelivered").addEventListener("click", () => setDeliveryConfirmOpen(false));
+document.getElementById("confirmDelivered").addEventListener("click", completePendingOrder);
+document.getElementById("closeCancelConfirm").addEventListener("click", () => setCancelConfirmOpen(false));
+document.getElementById("keepOrder").addEventListener("click", () => setCancelConfirmOpen(false));
+document.getElementById("confirmCancel").addEventListener("click", cancelPendingOrder);
 themeButton.addEventListener("click", () => setTheme(document.body.classList.contains("dark-mode") ? "light" : "dark"));
 profileButton.addEventListener("click", () => { const open = profileMenu.hidden; profileMenu.hidden = !open; profileButton.setAttribute("aria-expanded", String(open)); });
 document.getElementById("signOutButton").addEventListener("click", () => { user = null; try { localStorage.removeItem("cravecart-user"); } catch {} profileMenu.hidden = true; profileButton.setAttribute("aria-expanded", "false"); renderUser(); document.getElementById("welcomeName").focus(); });
 welcomeForm.addEventListener("submit", event => { event.preventDefault(); const name = document.getElementById("welcomeName").value.trim().replace(/\s+/g, " "); const phone = document.getElementById("welcomePhone").value.replace(/\D/g, "").slice(-10); const error = document.getElementById("welcomeError"); if (name.length < 2) { error.textContent = "Please enter at least two letters for your name."; return; } if (phone.length !== 10) { error.textContent = "Please enter a valid 10-digit phone number."; return; } user = { name, phone }; saveUser(); error.textContent = ""; renderUser(); showToast(`Welcome to the table, ${name.split(" ")[0]}!`); });
 document.addEventListener("click", event => { if (!event.target.closest(".profile-wrap")) { profileMenu.hidden = true; profileButton.setAttribute("aria-expanded", "false"); } });
-document.addEventListener("keydown", event => { if (event.key === "Escape") { setCartOpen(false); setLocationOpen(false); setOrdersOpen(false); profileMenu.hidden = true; profileButton.setAttribute("aria-expanded", "false"); } });
+document.addEventListener("keydown", event => { if (event.key === "Escape") { setCartOpen(false); setLocationOpen(false); setOrdersOpen(false); setDeliveryConfirmOpen(false); setCancelConfirmOpen(false); profileMenu.hidden = true; profileButton.setAttribute("aria-expanded", "false"); } });
 setTheme(readStoredText("cravecart-theme") === "dark" ? "dark" : "light");
 renderLocation(); renderUser(); renderCategories(); renderFood(); renderCart();

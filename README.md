@@ -2,6 +2,8 @@
 
 A responsive, frontend-only food ordering experience created for the CodeKrafters SRM 2026 Web Development Challenge — **1st Year, Task 2**.
 
+[Run the live project online](https://rays-of-uv.github.io/yuvraj-a-c-cybersec-firstyear/)
+
 ## What it demonstrates
 
 - Restaurant-style landing banner and clear food-category browsing
@@ -14,7 +16,8 @@ A responsive, frontend-only food ordering experience created for the CodeKrafter
 - Responsive desktop and mobile layouts, keyboard-friendly controls, visible focus states, and reduced-motion support
 - Custom delivery location selection with country, city, and area
 - Profile order history with ongoing and past-order sections
-- Checkout placeholder flow that stores an ongoing local order while backend work is pending
+- Checkout flow that places an order into Ongoing orders, with delivery confirmation to move it into Past orders
+- Order cancellation flow with a transparent 50% next-order charge to discourage food waste
 
 ## Run locally
 

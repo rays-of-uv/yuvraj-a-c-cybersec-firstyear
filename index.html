@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="CraveCart food ordering interface" />
+    <title>CraveCart — Your next craving, delivered.</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,700;0,800;1,700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="nav shell" aria-label="Main navigation">
+        <a class="brand" href="#home" aria-label="CraveCart home">
+          <span class="brand-mark" aria-hidden="true">C</span>
+          <span>crave<span>cart</span></span>
+        </a>
+        <button class="location" id="locationButton" type="button" title="Change delivery location" aria-label="Change delivery location">
+          <span aria-hidden="true">⌖</span>
+          <div><small>Deliver to</small><strong id="locationLabel">Indiranagar, Bengaluru</strong></div>
+          <span class="chevron" aria-hidden="true">⌄</span>
+        </button>
+        <div class="nav-actions">
+          <button class="icon-button search-button" id="searchButton" type="button" aria-label="Search menu"><span>⌕</span></button>
+          <button class="theme-button" id="themeButton" type="button" aria-label="Switch to dark mode" title="Switch colour mode"><span id="themeIcon" aria-hidden="true">☾</span></button>
+          <div class="profile-wrap">
+            <button class="profile-button" id="profileButton" type="button" aria-label="Open profile" aria-expanded="false" aria-controls="profileMenu"><span id="profileInitial">Y</span><b id="profileGreeting">Hi, foodie</b></button>
+            <div class="profile-menu" id="profileMenu" hidden>
+              <span class="profile-menu-kicker">YOUR CRAVECART</span>
+              <strong id="profileName">Foodie</strong>
+              <a id="profilePhone" href="tel:">Add your number</a>
+              <button id="profileLocationButton" type="button">Change delivery spot <span>⌖</span></button>
+              <button id="ordersButton" type="button">My orders <span>→</span></button>
+              <button id="signOutButton" type="button">Sign out <span>→</span></button>
+            </div>
+          </div>
+          <button class="cart-trigger" id="cartTrigger" aria-label="Open cart" aria-controls="cartDrawer" aria-expanded="false">
+            <span class="bag-icon" aria-hidden="true">♧</span>
+            <span>Cart</span>
+            <em id="cartCount">0</em>
+          </button>
+        </div>
+      </nav>
+    </header>
+
+    <main id="home">
+      <section class="hero shell">
+        <div class="hero-copy">
+          <p class="eyebrow"><span></span> THE FLAVOUR DROP</p>
+          <h1>Good food,<br /><i>good mood.</i></h1>
+          <p class="hero-text">Your local favourites, delivered hot and happy. Find your next delicious moment in just a few taps.</p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#menu">Explore menu <span aria-hidden="true">→</span></a>
+            <button class="button button-ghost" id="browseButton">Browse categories</button>
+          </div>
+          <div class="hero-proof">
+            <div class="avatars" aria-hidden="true"><span>😊</span><span>😋</span><span>🤩</span></div>
+            <div><strong>20k+ happy foodies</strong><small>eating their favourites today</small></div>
+          </div>
+        </div>
+        <div class="hero-visual" aria-label="Pizza, burger, fries and a citrus drink"></div>
+        <div class="floating-rating"><span>★</span><div><b>4.9</b><small>customer love</small></div></div>
+        <div class="delivery-pill"><span aria-hidden="true">⚡</span><div><b>Fast delivery</b><small>at your door in 30 min</small></div></div>
+      </section>
+
+      <section class="benefits shell" aria-label="Service highlights">
+        <article><span class="benefit-icon">⚡</span><div><h3>Speedy delivery</h3><p>Fresh food, right on time.</p></div></article>
+        <article><span class="benefit-icon">✦</span><div><h3>Top-rated picks</h3><p>Only the food you’ll love.</p></div></article>
+        <article><span class="benefit-icon">♧</span><div><h3>Easy payment</h3><p>Safe, simple, seamless.</p></div></article>
+      </section>
+
+      <section class="menu-section shell" id="menu">
+        <div class="section-heading">
+          <div><p class="eyebrow"><span></span> CRAVE THE MOMENT</p><h2>What are you <i>hungry</i> for?</h2></div>
+          <button class="text-button" id="viewAllButton">View all <span>→</span></button>
+        </div>
+        <div class="category-row" id="categoryRow" role="tablist" aria-label="Food categories"></div>
+
+        <div class="food-toolbar">
+          <p id="resultCount">Popular near you</p>
+          <label class="menu-search"><span aria-hidden="true">⌕</span><input type="search" id="foodSearch" placeholder="Search something tasty" aria-label="Search food" /></label>
+        </div>
+        <div class="food-grid" id="foodGrid" aria-live="polite"></div>
+      </section>
+
+      <section class="offer shell">
+        <div class="offer-copy"><p class="eyebrow"><span></span> FIRST BITE PERK</p><h2>Your first order<br />tastes even better.</h2><p class="offer-note">Valid on orders above ₹299. T&amp;Cs apply.</p></div>
+        <div class="offer-stamp" aria-label="40 percent off">40%<span>OFF</span></div>
+        <div class="offer-code"><span>Use code</span><strong>CODEKRAFTERS</strong><button id="copyCode" aria-label="Copy CODEKRAFTERS code">⧉</button></div>
+      </section>
+    </main>
+
+    <aside class="cart-drawer" id="cartDrawer" aria-label="Your cart" aria-hidden="true">
+      <div class="drawer-header"><div><p class="eyebrow"><span></span> YOUR ORDER</p><h2>Your cart</h2></div><button class="close-button" id="closeCart" aria-label="Close cart">×</button></div>
+      <div class="cart-items" id="cartItems"></div>
+      <div class="cart-empty" id="cartEmpty"><span>♧</span><h3>Your cart is feeling light.</h3><p>Add something delicious to get started.</p><button class="button button-primary" id="startOrdering">Find food</button></div>
+      <div class="cart-summary" id="cartSummary" hidden>
+        <section class="coupon-panel" aria-labelledby="couponHeading">
+          <div class="coupon-heading"><span class="coupon-icon" aria-hidden="true">✦</span><div><p id="couponHeading">Got a flavour key?</p><small>Try <strong>CODEKRAFTERS</strong> on orders above ₹299.</small></div></div>
+          <form class="coupon-form" id="couponForm" novalidate>
+            <label class="sr-only" for="couponInput">Coupon code</label>
+            <input id="couponInput" name="coupon" maxlength="16" autocomplete="off" placeholder="ENTER CODE" />
+            <button type="submit" id="applyCoupon">Apply</button>
+          </form>
+          <p class="coupon-status" id="couponStatus" aria-live="polite"></p>
+          <div class="coupon-applied" id="couponApplied" hidden><span><b>✦</b> <strong id="couponLabel"></strong> is tucked in</span><button id="removeCoupon" type="button">Remove</button></div>
+        </section>
+        <div><span>Item total</span><strong id="subtotal">₹0</strong></div>
+        <div class="discount-row" id="discountRow" hidden><span>Flavour key discount</span><strong id="discount">−₹0</strong></div>
+        <div><span>Delivery</span><strong class="free-delivery">FREE</strong></div>
+        <div class="total-row"><span>To pay</span><strong id="total">₹0</strong></div>
+        <button class="button button-primary checkout-button" id="checkoutButton">Proceed to checkout <span>→</span></button>
+      </div>
+    </aside>
+    <div class="scrim" id="scrim" aria-hidden="true"></div>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <div class="location-layer" id="locationLayer" role="dialog" aria-modal="true" aria-labelledby="locationTitle" hidden>
+      <form class="location-card" id="locationForm" novalidate>
+        <button class="location-close" id="closeLocation" type="button" aria-label="Close delivery location">×</button>
+        <p class="eyebrow"><span></span> YOUR DELIVERY SPOT</p>
+        <h2 id="locationTitle">Where should we bring it?</h2>
+        <p class="location-intro">Pick your country and city, then add a neighbourhood or custom area.</p>
+        <label for="countrySelect">Country</label>
+        <select id="countrySelect" name="country">
+          <option value="India">India</option>
+          <option value="United Arab Emirates">United Arab Emirates</option>
+          <option value="Singapore">Singapore</option>
+          <option value="United Kingdom">United Kingdom</option>
+        </select>
+        <label for="citySelect">City</label>
+        <select id="citySelect" name="city"></select>
+        <label for="areaInput">Area or neighbourhood</label>
+        <input id="areaInput" name="area" maxlength="48" placeholder="e.g. Indiranagar" required />
+        <p class="location-error" id="locationError" role="alert"></p>
+        <button class="button button-primary" type="submit">Save delivery spot <span>→</span></button>
+      </form>
+    </div>
+    <div class="orders-layer" id="ordersLayer" role="dialog" aria-modal="true" aria-labelledby="ordersTitle" hidden>
+      <section class="orders-card">
+        <button class="location-close" id="closeOrders" type="button" aria-label="Close orders">×</button>
+        <p class="eyebrow"><span></span> YOUR CRAVECART</p>
+        <h2 id="ordersTitle">Your orders</h2>
+        <div id="ordersContent"></div>
+      </section>
+    </div>
+    <div class="welcome-layer" id="welcomeLayer" role="dialog" aria-modal="true" aria-labelledby="welcomeTitle" hidden>
+      <form class="welcome-card" id="welcomeForm" novalidate>
+        <div class="welcome-orbit orbit-one"></div><div class="welcome-orbit orbit-two"></div>
+        <span class="welcome-mark" aria-hidden="true">C</span>
+        <p class="eyebrow"><span></span> A TABLE FOR ONE</p>
+        <h1 id="welcomeTitle">First, what should we call you?</h1>
+        <p>We’ll save your details only in this browser, so your next craving starts a little warmer.</p>
+        <label for="welcomeName">Your name</label>
+        <input id="welcomeName" name="name" type="text" maxlength="40" autocomplete="name" placeholder="e.g. Yuvraj" required />
+        <label for="welcomePhone">Phone number</label>
+        <input id="welcomePhone" name="phone" type="tel" inputmode="numeric" autocomplete="tel" placeholder="e.g. 98765 43210" required />
+        <p class="welcome-error" id="welcomeError" role="alert"></p>
+        <button class="button button-primary welcome-submit" type="submit">Start my food story <span>→</span></button>
+        <small>Zero spam. Just good food energy.</small>
+      </form>
+    </div>
+
+    <script src="cart-logic.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

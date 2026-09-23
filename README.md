@@ -36,8 +36,8 @@ index.html       Page structure
 styles.css       Responsive styling and animations
 app.js           Browser interactions and rendering
 cart-logic.js    Testable cart/coupon business logic
-assets/          Project-owned visuals
-tests/           Self-tests for cart logic and page behaviour
+assets           Project-owned visuals
+tests            Self-tests for cart logic and page behaviour
 ```
 
 ## Test it

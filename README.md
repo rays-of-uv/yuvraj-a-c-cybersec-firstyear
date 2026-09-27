@@ -36,10 +36,6 @@ assets           Project-owned visuals
 tests            Self-tests for cart logic and page behaviour
 ```
 
-## Demo checklist
-
-For a 60-second submission demo: show the responsive homepage, change a category, search a dish, add it to cart, show the image flying to the cart, apply `CODEKRAFTERS`, update a quantity, and remove the coupon.
-
 ## Scope
 
-This is intentionally a frontend-only project: payment, login, database, and backend integration are outside the first-year Task 2 requirement.
+This is intentionally a frontend-only project: payment, login, database, and backend integration aren't available yet.

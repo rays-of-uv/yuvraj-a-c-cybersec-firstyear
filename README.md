@@ -12,7 +12,6 @@ A responsive, frontend-only food ordering experience created for the Web Develop
 - A dish-image “flight” animation from a food card into the cart
 - A warm editorial/neumorphic visual system with animated light/dark mode transitions
 - Responsive motion, hover states, onboarding, cart drawer, and reduced-motion support
-- Coupon validation using `CODEKRAFTERS` (40% off, maximum ₹120, valid above ₹299)
 - Responsive desktop and mobile layouts, keyboard-friendly controls, visible focus states, and reduced-motion support
 - Custom delivery location selection with country, city, and area
 - Profile order history with ongoing and past-order sections

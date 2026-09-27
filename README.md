@@ -1,6 +1,6 @@
 # CraveCart — Food Ordering Interface
 
-A responsive, frontend-only food ordering experience created for the CodeKrafters SRM 2026 Web Development Challenge — **1st Year, Task 2**.
+A responsive, frontend-only food ordering experience created for the Web Development — **1st Year**.
 
 [Run the live project online](https://rays-of-uv.github.io/yuvraj-a-c-cybersec-firstyear/)
 
@@ -25,7 +25,6 @@ No install step is needed.
 
 1. Download or clone this folder.
 2. Open `index.html` in a modern browser.
-3. Add food, open the cart, and try `CODEKRAFTERS` at checkout.
 
 ## Project structure
 

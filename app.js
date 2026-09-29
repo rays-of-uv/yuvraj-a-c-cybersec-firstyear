@@ -369,7 +369,22 @@ document.getElementById("keepOrder").addEventListener("click", () => setCancelCo
 document.getElementById("confirmCancel").addEventListener("click", cancelPendingOrder);
 themeButton.addEventListener("click", () => setTheme(document.body.classList.contains("dark-mode") ? "light" : "dark"));
 profileButton.addEventListener("click", () => { const open = profileMenu.hidden; profileMenu.hidden = !open; profileButton.setAttribute("aria-expanded", String(open)); });
-document.getElementById("signOutButton").addEventListener("click", () => { user = null; try { localStorage.removeItem("cravecart-user"); } catch {} profileMenu.hidden = true; profileButton.setAttribute("aria-expanded", "false"); renderUser(); document.getElementById("welcomeName").focus(); });
+document.getElementById("signOutButton").addEventListener("click", () => {
+  user = null;
+  cart = [];
+  appliedCoupon = "";
+  setCouponFeedback("", "");
+  try {
+    localStorage.removeItem("cravecart-user");
+  } catch {}
+  saveCart();
+  saveCoupon();
+  profileMenu.hidden = true;
+  profileButton.setAttribute("aria-expanded", "false");
+  renderCart();
+  renderUser();
+  document.getElementById("welcomeName").focus();
+});
 welcomeForm.addEventListener("submit", event => { event.preventDefault(); const name = document.getElementById("welcomeName").value.trim().replace(/\s+/g, " "); const phone = document.getElementById("welcomePhone").value.replace(/\D/g, "").slice(-10); const error = document.getElementById("welcomeError"); if (name.length < 2) { error.textContent = "Please enter at least two letters for your name."; return; } if (phone.length !== 10) { error.textContent = "Please enter a valid 10-digit phone number."; return; } user = { name, phone }; saveUser(); error.textContent = ""; renderUser(); showToast(`Welcome to the table, ${name.split(" ")[0]}!`); });
 document.addEventListener("click", event => { if (!event.target.closest(".profile-wrap")) { profileMenu.hidden = true; profileButton.setAttribute("aria-expanded", "false"); } });
 document.addEventListener("keydown", event => { if (event.key === "Escape") { setCartOpen(false); setLocationOpen(false); setOrdersOpen(false); setDeliveryConfirmOpen(false); setCancelConfirmOpen(false); profileMenu.hidden = true; profileButton.setAttribute("aria-expanded", "false"); } });
